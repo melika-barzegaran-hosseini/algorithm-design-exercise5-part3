@@ -158,15 +158,65 @@ public class Problem3
         return input;
     }
 
+    private Float[][] sort(Float[][] values)
+    {
+        for(int i = 1; i < values[0].length; i++)
+        {
+            Float width = values[0][i];
+            Float height = values[1][i];
+            int j = i - 1;
+
+            while(j >= 0 && values[0][j] > width)
+            {
+                values[0][j + 1] = values[0][j];
+                values[1][j + 1] = values[1][j];
+                j = j - 1;
+            }
+
+            values[0][j + 1] = width;
+            values[1][j + 1] = height;
+        }
+
+        return values;
+    }
+
+    //returns the maximum height of the tower which can be built - the input is sorted based on the widths
     private Integer solve(Float[][] input)
     {
-        return null;
+        //n represents the input size
+        int n = input[0].length;
+
+        //lis[i] represents the length of the longest increasing sub-sequence till index i
+        int[] lis = new int[input[0].length];
+
+        //initializing the lis array for all indexes
+        for(int i = 0; i < n; i++)
+            lis[i] = 1;
+
+        //filling the lis array in a bottom up manner
+        //using the recursive relation solve(i) = 1 + max{solve(j)} where i > j
+        //and input[0][i] >= input[0][j]
+        //and input[1][i] >= input[1][j]
+        //and if there is no such j then solve(i) = 1
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < i; j++)
+                if(input[0][i] >= input[0][j] && input[1][i] >= input[1][j] && lis[i] < lis[j] + 1)
+                    lis[i] = lis[j] + 1;
+
+        //picking the maximum value in the lis array
+        int max = 0;
+        for(int i = 0; i < n; i++)
+            if(max < lis[i])
+                max = lis[i];
+
+        //returning the maximum height of the tower which can be built
+        return max;
     }
 
     public void solve()
     {
         Float[][] input = read(path);
-        Integer output = solve(input);
+        Integer output = solve(sort(input));
         if(detailedPrinting)
         {
             System.out.println("the output = " + output);
